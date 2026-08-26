@@ -1,25 +1,85 @@
+import os
+from typing import List, Dict, Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api.eligibility import router as eligibility_router
+from models import UserProfile, SchemeResult
+from rule_engine import load_schemes, run_rule_engine
+from llm_explainer import explain_result
 
 app = FastAPI(
-    title="Government Scheme Eligibility Matcher",
-    description="Rules decide. AI explains. This API never lets a model decide eligibility.",
-    version="0.1.0",
+    title="AI-Powered Scheme Assistance Agent",
+    description="Phase 4 Eligibility Rule Engine & LLM Explanation Backend API",
+    version="1.0.0"
 )
 
-# Dev-only CORS. Tighten this before any real deployment.
+# Enable CORS for all origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(eligibility_router)
+def get_schemes_file_path() -> str:
+    """Returns path to schemes JSON file, checking both schemes.json and scheme.json."""
+    base_dir = os.path.dirname(__file__)
+    primary = os.path.join(base_dir, "schemes.json")
+    secondary = os.path.join(base_dir, "scheme.json")
+    if not os.path.exists(primary) and os.path.exists(secondary):
+        return secondary
+    return primary
+
+
+SCHEMES_FILE_PATH = get_schemes_file_path()
 
 
 @app.get("/")
-def health_check():
-    return {"status": "ok", "service": "gov-scheme-matcher-backend"}
+def health_check() -> Dict[str, str]:
+    """Health check endpoint."""
+    return {
+        "status": "ok",
+        "message": "Scheme Assistant Backend API is running"
+    }
+
+
+@app.post("/check-eligibility")
+def check_eligibility(user: UserProfile) -> Dict[str, Any]:
+    """Accepts UserProfile JSON body, evaluates rules against loaded schemes, returns eligibility results."""
+    schemes = load_schemes(get_schemes_file_path())
+    results = [SchemeResult(**r) for r in run_rule_engine(user, schemes)]
+    eligible_count = sum(1 for r in results if r.eligible)
+    return {
+        "total_schemes_checked": len(schemes),
+        "eligible_count": eligible_count,
+        "results": results
+    }
+
+
+@app.post("/check-eligibility-with-explanation")
+def check_eligibility_with_explanation(user: UserProfile) -> Dict[str, Any]:
+    """Accepts UserProfile JSON body, evaluates rules against loaded schemes, generates explanations, returns results."""
+    schemes = load_schemes(get_schemes_file_path())
+    raw_results = run_rule_engine(user, schemes)
+    user_dict = user.dict() if hasattr(user, "dict") else user.model_dump()
+
+    results = []
+    for r in raw_results:
+        res_dict = dict(r)
+        res_dict["explanation"] = explain_result(user_dict, res_dict)
+        results.append(SchemeResult(**res_dict))
+
+    eligible_count = sum(1 for r in results if r.eligible)
+    return {
+        "total_schemes_checked": len(schemes),
+        "eligible_count": eligible_count,
+        "results": results
+    }
+
+
+@app.get("/schemes")
+def get_schemes() -> List[Dict[str, Any]]:
+    """Returns the full raw list of schemes."""
+    return load_schemes(get_schemes_file_path())
+
