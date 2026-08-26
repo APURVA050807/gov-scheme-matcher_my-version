@@ -1,0 +1,233 @@
+[
+  {
+    "scheme_id": "SCH-003",
+    "scheme_name": "PM SVANidhi",
+    "summary": "Micro-credit for street vendors who were vending on or before 24 March 2020.",
+    "beneficiary_type": "Street Vendor",
+    "official_source_url": "https://pmsvanidhi.mohua.gov.in/",
+    "official_application_url": "https://pmsvanidhi.mohua.gov.in/",
+    "last_verified": null,
+    "data_status": "PARTIAL_NEEDS_VERIFICATION",
+    "missing_fields": ["income_limit", "age_limit", "loan_amount_slabs"],
+    "required_documents": [
+      { "name": "Certificate of Vending (CoV) or Letter of Recommendation (LoR)", "required": true }
+    ],
+    "rule_logic": {
+      "type": "ALL",
+      "conditions": [
+        {
+          "type": "CONDITION",
+          "field": "employment_type",
+          "operator": "EQUALS",
+          "value": "street_vendor",
+          "label": "Occupation",
+          "evidence": {
+            "source_title": "PM SVANidhi Portal",
+            "source_url": "https://pmsvanidhi.mohua.gov.in/",
+            "publisher": "Ministry of Housing and Urban Affairs",
+            "evidence_summary": "Scheme is exclusively for street vendors."
+          }
+        },
+        {
+          "type": "CONDITION",
+          "field": "vending_start_date",
+          "operator": "LESS_THAN_OR_EQUAL",
+          "value": "2020-03-24",
+          "label": "Vending start date",
+          "evidence": {
+            "source_title": "PM SVANidhi Eligibility Guidelines",
+            "source_url": "https://pmsvanidhi.mohua.gov.in/",
+            "publisher": "Ministry of Housing and Urban Affairs",
+            "evidence_summary": "Vendors who were in business on or before March 24, 2020, are eligible."
+          }
+        },
+        {
+          "type": "CONDITION",
+          "field": "has_tvc_certificate_or_lor",
+          "operator": "EQUALS",
+          "value": true,
+          "label": "Certificate of Vending / Letter of Recommendation",
+          "evidence": {
+            "source_title": "PM SVANidhi Portal",
+            "source_url": "https://pmsvanidhi.mohua.gov.in/",
+            "publisher": "Ministry of Housing and Urban Affairs",
+            "evidence_summary": "Must possess a Certificate of Vending or a Letter of Recommendation."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "scheme_id": "SCH-004",
+    "scheme_name": "PM Vishwakarma",
+    "summary": "Support scheme for traditional artisans and craftspeople, one benefit per family.",
+    "beneficiary_type": "Artisan / Craftsperson",
+    "official_source_url": "https://pmvishwakarma.gov.in/",
+    "official_application_url": "https://pmvishwakarma.gov.in/",
+    "last_verified": null,
+    "data_status": "PARTIAL_NEEDS_VERIFICATION",
+    "missing_fields": ["age_limit", "trade_list", "income_limit"],
+    "required_documents": [],
+    "rule_logic": {
+      "type": "ALL",
+      "conditions": [
+        {
+          "type": "NOT",
+          "conditions": [
+            {
+              "type": "CONDITION",
+              "field": "has_active_similar_government_loan_last_5_years",
+              "operator": "EQUALS",
+              "value": true,
+              "label": "Existing similar government loan (last 5 years)",
+              "evidence": {
+                "source_title": "PM Vishwakarma Guidelines",
+                "source_url": "https://pmvishwakarma.gov.in/",
+                "publisher": "Ministry of MSME",
+                "evidence_summary": "Excluded if applicant has an unpaid similar loan (PMEGP, MUDRA, SVANidhi) in the last 5 years."
+              }
+            }
+          ]
+        },
+        {
+          "type": "NOT",
+          "conditions": [
+            {
+              "type": "CONDITION",
+              "field": "has_family_member_registered_in_vishwakarma",
+              "operator": "EQUALS",
+              "value": true,
+              "label": "Family member already registered",
+              "evidence": {
+                "source_title": "PM Vishwakarma Scheme Guidelines",
+                "source_url": "https://pmvishwakarma.gov.in/",
+                "publisher": "Ministry of MSME",
+                "evidence_summary": "Registration is restricted to one member per family (husband, wife, unmarried children)."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "scheme_id": "SCH-005",
+    "scheme_name": "Pradhan Mantri Ujjwala Yojana 2.0 (PMUY)",
+    "summary": "Free LPG gas connection for women from specified deprived-household categories.",
+    "beneficiary_type": "Woman, head of eligible household",
+    "official_source_url": "https://www.pmuy.gov.in/about.html",
+    "official_application_url": "https://www.pmuy.gov.in/ujjwala2.html",
+    "last_verified": null,
+    "data_status": "PARTIAL_NEEDS_VERIFICATION",
+    "missing_fields": ["state_restrictions"],
+    "required_documents": [],
+    "rule_logic": {
+      "type": "ALL",
+      "conditions": [
+        {
+          "type": "CONDITION",
+          "field": "gender",
+          "operator": "EQUALS",
+          "value": "female",
+          "label": "Gender",
+          "evidence": {
+            "source_title": "New Ujjwala 2.0 Connection - PMUY",
+            "source_url": "https://www.pmuy.gov.in/ujjwala2.html",
+            "publisher": "Ministry of Petroleum and Natural Gas",
+            "evidence_summary": "The applicant must be a woman."
+          }
+        },
+        {
+          "type": "CONDITION",
+          "field": "age",
+          "operator": "GREATER_THAN_OR_EQUAL",
+          "value": 18,
+          "label": "Age",
+          "unit": "years",
+          "evidence": {
+            "source_title": "New Ujjwala 2.0 Connection - PMUY",
+            "source_url": "https://www.pmuy.gov.in/ujjwala2.html",
+            "publisher": "Ministry of Petroleum and Natural Gas",
+            "evidence_summary": "Must have attained 18 years of age."
+          }
+        },
+        {
+          "type": "CONDITION",
+          "field": "deprivation_category",
+          "operator": "IN",
+          "value": [
+            "SC Households", "ST Households",
+            "Pradhan Mantri Awas Yojana (Gramin)", "Most Backward Classes",
+            "Antyodaya Anna Yojana (AAY)", "Tea and Ex-Tea Garden tribes",
+            "Forest Dwellers", "People residing on Islands and River Islands",
+            "SECC Households (AHL TIN)", "Poor Household as per 14-point declaration"
+          ],
+          "label": "Household deprivation category",
+          "evidence": {
+            "source_title": "About PMUY Eligibility",
+            "source_url": "https://www.pmuy.gov.in/about.html",
+            "publisher": "Ministry of Petroleum and Natural Gas",
+            "evidence_summary": "Applicant's household must belong to one of the 10 specified categories."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "scheme_id": "SCH-009",
+    "scheme_name": "Post Matric Scholarship for SC Students",
+    "summary": "Financial assistance for SC students studying at post-matriculation level.",
+    "beneficiary_type": "Student",
+    "official_source_url": "https://scholarships.gov.in/",
+    "official_application_url": "https://scholarships.gov.in/",
+    "last_verified": null,
+    "data_status": "PARTIAL_NEEDS_VERIFICATION",
+    "missing_fields": ["state_specific_variations"],
+    "required_documents": [],
+    "rule_logic": {
+      "type": "ALL",
+      "conditions": [
+        {
+          "type": "CONDITION",
+          "field": "social_category",
+          "operator": "EQUALS",
+          "value": "SC",
+          "label": "Social category",
+          "evidence": {
+            "source_title": "National Scholarship Portal",
+            "source_url": "https://scholarships.gov.in/",
+            "publisher": "Ministry of Social Justice and Empowerment",
+            "evidence_summary": "Scheme explicitly targets SC students."
+          }
+        },
+        {
+          "type": "CONDITION",
+          "field": "current_education_level",
+          "operator": "IN",
+          "value": ["class_11", "class_12", "iti", "polytechnic", "diploma", "undergraduate", "postgraduate"],
+          "label": "Current education level",
+          "evidence": {
+            "source_title": "Post-Matric Scholarship for SC students - myScheme",
+            "source_url": "https://www.myscheme.gov.in/schemes/pmsfss",
+            "publisher": "Ministry of Social Justice and Empowerment",
+            "evidence_summary": "Covers post-matriculation / post-secondary stages, Groups 1 through 4."
+          }
+        },
+        {
+          "type": "CONDITION",
+          "field": "annual_household_income",
+          "operator": "LESS_THAN_OR_EQUAL",
+          "value": 250000,
+          "label": "Annual household income",
+          "unit": "INR",
+          "evidence": {
+            "source_title": "NSP Post Matric SC Guidelines",
+            "source_url": "https://scholarships.gov.in/",
+            "publisher": "Ministry of Social Justice and Empowerment",
+            "evidence_summary": "Family income must be less than or equal to 2.5 Lakhs per annum."
+          }
+        }
+      ]
+    }
+  }
+]

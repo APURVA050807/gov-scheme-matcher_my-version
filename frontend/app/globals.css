@@ -1,0 +1,69 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FAFAF8;
+  color: #0F172A;
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-50;
+  }
+} */
+
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FAFAF8;
+  color: #0F172A;
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-50;
+  }
+}
+
+/* Ambient floating gradient orbs - gives the landing page depth without
+   any 3D rendering engine. Pure CSS, cheap to run, never fails to load. */
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2%, -4%, 0) scale(1.05); }
+}
+@keyframes float-slower {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-3%, 3%, 0) scale(1.08); }
+}
+
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  pointer-events: none;
+}
+.orb-1 {
+  animation: float-slow 14s ease-in-out infinite;
+}
+.orb-2 {
+  animation: float-slower 18s ease-in-out infinite;
+}
+
+/* Scene container for depth-layered content (used with perspective children) */
+.scene {
+  perspective: 1200px;
+}
