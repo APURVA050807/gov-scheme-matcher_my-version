@@ -1,446 +1,8 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import Link from "next/link";
-// import { SchemeResult } from "@/lib/api";
-// import {
-//   CheckCircle2,
-//   XCircle,
-//   HelpCircle,
-//   ExternalLink,
-//   ChevronDown,
-//   AlertTriangle,
-// } from "lucide-react";
-
-// export default function ResultsPage() {
-//   const [results, setResults] = useState<SchemeResult[] | null>(null);
-
-//   useEffect(() => {
-//     const raw = sessionStorage.getItem("scheme-matcher-results");
-//     if (raw) setResults(JSON.parse(raw));
-//   }, []);
-
-//   if (results === null) {
-//     return (
-//       <main className="mx-auto max-w-2xl px-6 py-20 text-center">
-//         <p className="text-ink/60">No results to show yet.</p>
-//         <Link href="/assess" className="mt-4 inline-block text-primary underline">
-//           Start the assessment
-//         </Link>
-//       </main>
-//     );
-//   }
-
-//   const eligible = results.filter((r) => r.status === "ELIGIBLE");
-//   const needsInfo = results.filter((r) => r.status === "NEEDS_MORE_INFORMATION");
-//   const notEligible = results.filter((r) => r.status === "NOT_ELIGIBLE");
-
-//   return (
-//     <main className="mx-auto max-w-2xl px-6 py-14">
-//       <h1 className="text-2xl font-semibold text-ink">Your scheme matches</h1>
-//       <p className="mt-1 text-ink/60">
-//         {eligible.length} scheme{eligible.length !== 1 ? "s" : ""} may be relevant to you
-//       </p>
-
-//       <div className="mt-8 space-y-4">
-//         {eligible.map((r) => (
-//           <SchemeCard key={r.scheme_id} result={r} />
-//         ))}
-//       </div>
-
-//       {needsInfo.length > 0 && (
-//         <div className="mt-10">
-//           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">
-//             We need a bit more information
-//           </h2>
-//           <div className="mt-4 space-y-4">
-//             {needsInfo.map((r) => (
-//               <SchemeCard key={r.scheme_id} result={r} />
-//             ))}
-//           </div>
-//         </div>
-//       )}
-
-//       {notEligible.length > 0 && (
-//         <div className="mt-10">
-//           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">
-//             You don&apos;t currently match {notEligible.length} other scheme
-//             {notEligible.length !== 1 ? "s" : ""}
-//           </h2>
-//           <div className="mt-4 space-y-4">
-//             {notEligible.map((r) => (
-//               <SchemeCard key={r.scheme_id} result={r} />
-//             ))}
-//           </div>
-//         </div>
-//       )}
-//     </main>
-//   );
-// }
-
-// function statusMeta(status: SchemeResult["status"]) {
-//   switch (status) {
-//     case "ELIGIBLE":
-//       return { icon: CheckCircle2, color: "text-success", bg: "bg-success/10", label: "Eligible" };
-//     case "NOT_ELIGIBLE":
-//       return { icon: XCircle, color: "text-danger", bg: "bg-danger/10", label: "Not eligible" };
-//     default:
-//       return {
-//         icon: HelpCircle,
-//         color: "text-warn",
-//         bg: "bg-warn/10",
-//         label: "Needs more information",
-//       };
-//   }
-// }
-
-// function SchemeCard({ result }: { result: SchemeResult }) {
-//   const [open, setOpen] = useState(false);
-//   const meta = statusMeta(result.status);
-//   const Icon = meta.icon;
-//   const satisfiedCount = result.checks.filter((c) => c.status === "SATISFIED").length;
-
-//   return (
-//     <div className="overflow-hidden rounded-card border border-line bg-white">
-//       <button
-//         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-//         onClick={() => setOpen((o) => !o)}
-//       >
-//         <div>
-//           <div className="flex items-center gap-2">
-//             <Icon className={`h-4 w-4 ${meta.color}`} />
-//             <span className="font-medium text-ink">{result.scheme_name}</span>
-//           </div>
-//           <div className={`mt-1 inline-flex items-center gap-1 rounded-full ${meta.bg} px-2 py-0.5 text-xs font-medium ${meta.color}`}>
-//             {meta.label}
-//             {result.checks.length > 0 && (
-//               <span className="text-ink/40">
-//                 &nbsp;· {satisfiedCount}/{result.checks.length} conditions satisfied
-//               </span>
-//             )}
-//           </div>
-//           {result.data_status === "PARTIAL_NEEDS_VERIFICATION" && (
-//             <div className="mt-1.5 flex items-center gap-1 text-xs text-warn/80">
-//               <AlertTriangle className="h-3 w-3" />
-//               Some fields for this scheme still need official verification
-//             </div>
-//           )}
-//         </div>
-//         <ChevronDown
-//           className={`h-4 w-4 shrink-0 text-ink/40 transition-transform ${open ? "rotate-180" : ""}`}
-//         />
-//       </button>
-
-//       {open && (
-//         <div className="border-t border-line px-5 py-4">
-//           <ul className="space-y-3">
-//             {result.checks.map((c, i) => (
-//               <ConditionRow key={i} check={c} />
-//             ))}
-//           </ul>
-
-//           <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-4">
-//             <a
-//               href={result.official_source_url}
-//               target="_blank"
-//               rel="noreferrer"
-//               className="inline-flex items-center gap-1 text-xs text-ink/50 hover:text-ink"
-//             >
-//               Official source <ExternalLink className="h-3 w-3" />
-//             </a>
-//             {result.status !== "NOT_ELIGIBLE" && (
-//               <a
-//                 href={result.official_application_url}
-//                 target="_blank"
-//                 rel="noreferrer"
-//                 className="ml-auto inline-flex items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary-700"
-//               >
-//                 Apply officially <ExternalLink className="h-3 w-3" />
-//               </a>
-//             )}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// function ConditionRow({ check }: { check: SchemeResult["checks"][number] }) {
-//   const statusIcon =
-//     check.status === "SATISFIED" ? (
-//       <CheckCircle2 className="h-4 w-4 text-success" />
-//     ) : check.status === "FAILED" ? (
-//       <XCircle className="h-4 w-4 text-danger" />
-//     ) : (
-//       <HelpCircle className="h-4 w-4 text-warn" />
-//     );
-
-//   return (
-//     <li className="flex items-start gap-3 text-sm">
-//       {statusIcon}
-//       <div className="flex-1">
-//         <div className="flex items-center justify-between">
-//           <span className="font-medium text-ink">{check.label}</span>
-//           <span className="text-ink/50">
-//             {check.actual === null || check.actual === undefined
-//               ? "not provided"
-//               : String(check.actual)}
-//             {check.unit ? ` ${check.unit}` : ""}
-//           </span>
-//         </div>
-//         {check.evidence_summary && (
-//           <p className="mt-0.5 text-xs text-ink/45">{check.evidence_summary}</p>
-//         )}
-//       </div>
-//     </li>
-//   );
-// }
-
-
-
-
-
-
-
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import Link from "next/link";
-// import { SchemeResult } from "@/lib/api";
-// import {
-//   CheckCircle2,
-//   XCircle,
-//   HelpCircle,
-//   ExternalLink,
-//   ChevronDown,
-//   AlertTriangle,
-// } from "lucide-react";
-// import { motion } from "framer-motion";
-
-// const listVariants = {
-//   hidden: {},
-//   show: { transition: { staggerChildren: 0.08 } },
-// };
-// const itemVariants = {
-//   hidden: { opacity: 0, y: 14 },
-//   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
-// };
-
-// export default function ResultsPage() {
-//   const [results, setResults] = useState<SchemeResult[] | null>(null);
-
-//   useEffect(() => {
-//     const raw = sessionStorage.getItem("scheme-matcher-results");
-//     if (raw) setResults(JSON.parse(raw));
-//   }, []);
-
-//   if (results === null) {
-//     return (
-//       <main className="mx-auto max-w-2xl px-6 py-20 text-center">
-//         <p className="text-ink/60">No results to show yet.</p>
-//         <Link href="/assess" className="mt-4 inline-block text-primary underline">
-//           Start the assessment
-//         </Link>
-//       </main>
-//     );
-//   }
-
-//   const eligible = results.filter((r) => r.status === "ELIGIBLE");
-//   const needsInfo = results.filter((r) => r.status === "NEEDS_MORE_INFORMATION");
-//   const notEligible = results.filter((r) => r.status === "NOT_ELIGIBLE");
-
-//   return (
-//     <main className="mx-auto max-w-2xl px-6 py-14">
-//       <h1 className="text-2xl font-semibold text-ink">Your scheme matches</h1>
-//       <p className="mt-1 text-ink/60">
-//         {eligible.length} scheme{eligible.length !== 1 ? "s" : ""} may be relevant to you
-//       </p>
-
-//       <motion.div
-//         variants={listVariants}
-//         initial="hidden"
-//         animate="show"
-//         className="mt-8 space-y-4"
-//       >
-//         {eligible.map((r) => (
-//           <motion.div key={r.scheme_id} variants={itemVariants}>
-//             <SchemeCard result={r} />
-//           </motion.div>
-//         ))}
-//       </motion.div>
-
-//       {needsInfo.length > 0 && (
-//         <div className="mt-10">
-//           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">
-//             We need a bit more information
-//           </h2>
-//           <motion.div
-//             variants={listVariants}
-//             initial="hidden"
-//             animate="show"
-//             className="mt-4 space-y-4"
-//           >
-//             {needsInfo.map((r) => (
-//               <motion.div key={r.scheme_id} variants={itemVariants}>
-//                 <SchemeCard result={r} />
-//               </motion.div>
-//             ))}
-//           </motion.div>
-//         </div>
-//       )}
-
-//       {notEligible.length > 0 && (
-//         <div className="mt-10">
-//           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">
-//             You don&apos;t currently match {notEligible.length} other scheme
-//             {notEligible.length !== 1 ? "s" : ""}
-//           </h2>
-//           <motion.div
-//             variants={listVariants}
-//             initial="hidden"
-//             animate="show"
-//             className="mt-4 space-y-4"
-//           >
-//             {notEligible.map((r) => (
-//               <motion.div key={r.scheme_id} variants={itemVariants}>
-//                 <SchemeCard result={r} />
-//               </motion.div>
-//             ))}
-//           </motion.div>
-//         </div>
-//       )}
-//     </main>
-//   );
-// }
-
-// function statusMeta(status: SchemeResult["status"]) {
-//   switch (status) {
-//     case "ELIGIBLE":
-//       return { icon: CheckCircle2, color: "text-success", bg: "bg-success/10", label: "Eligible" };
-//     case "NOT_ELIGIBLE":
-//       return { icon: XCircle, color: "text-danger", bg: "bg-danger/10", label: "Not eligible" };
-//     default:
-//       return {
-//         icon: HelpCircle,
-//         color: "text-warn",
-//         bg: "bg-warn/10",
-//         label: "Needs more information",
-//       };
-//   }
-// }
-
-// function SchemeCard({ result }: { result: SchemeResult }) {
-//   const [open, setOpen] = useState(false);
-//   const meta = statusMeta(result.status);
-//   const Icon = meta.icon;
-//   const satisfiedCount = result.checks.filter((c) => c.status === "SATISFIED").length;
-
-//   return (
-//     <div className="overflow-hidden rounded-card border border-line bg-white">
-//       <button
-//         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-//         onClick={() => setOpen((o) => !o)}
-//       >
-//         <div>
-//           <div className="flex items-center gap-2">
-//             <Icon className={`h-4 w-4 ${meta.color}`} />
-//             <span className="font-medium text-ink">{result.scheme_name}</span>
-//           </div>
-//           <div className={`mt-1 inline-flex items-center gap-1 rounded-full ${meta.bg} px-2 py-0.5 text-xs font-medium ${meta.color}`}>
-//             {meta.label}
-//             {result.checks.length > 0 && (
-//               <span className="text-ink/40">
-//                 &nbsp;· {satisfiedCount}/{result.checks.length} conditions satisfied
-//               </span>
-//             )}
-//           </div>
-//           {result.data_status === "PARTIAL_NEEDS_VERIFICATION" && (
-//             <div className="mt-1.5 flex items-center gap-1 text-xs text-warn/80">
-//               <AlertTriangle className="h-3 w-3" />
-//               Some fields for this scheme still need official verification
-//             </div>
-//           )}
-//         </div>
-//         <ChevronDown
-//           className={`h-4 w-4 shrink-0 text-ink/40 transition-transform ${open ? "rotate-180" : ""}`}
-//         />
-//       </button>
-
-//       {open && (
-//         <div className="border-t border-line px-5 py-4">
-//           <ul className="space-y-3">
-//             {result.checks.map((c, i) => (
-//               <ConditionRow key={i} check={c} />
-//             ))}
-//           </ul>
-
-//           <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-4">
-//             <a
-//               href={result.official_source_url}
-//               target="_blank"
-//               rel="noreferrer"
-//               className="inline-flex items-center gap-1 text-xs text-ink/50 hover:text-ink"
-//             >
-//               Official source <ExternalLink className="h-3 w-3" />
-//             </a>
-//             {result.status !== "NOT_ELIGIBLE" && (
-//               <a
-//                 href={result.official_application_url}
-//                 target="_blank"
-//                 rel="noreferrer"
-//                 className="ml-auto inline-flex items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary-700"
-//               >
-//                 Apply officially <ExternalLink className="h-3 w-3" />
-//               </a>
-//             )}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// function ConditionRow({ check }: { check: SchemeResult["checks"][number] }) {
-//   const statusIcon =
-//     check.status === "SATISFIED" ? (
-//       <CheckCircle2 className="h-4 w-4 text-success" />
-//     ) : check.status === "FAILED" ? (
-//       <XCircle className="h-4 w-4 text-danger" />
-//     ) : (
-//       <HelpCircle className="h-4 w-4 text-warn" />
-//     );
-
-//   return (
-//     <li className="flex items-start gap-3 text-sm">
-//       {statusIcon}
-//       <div className="flex-1">
-//         <div className="flex items-center justify-between">
-//           <span className="font-medium text-ink">{check.label}</span>
-//           <span className="text-ink/50">
-//             {check.actual === null || check.actual === undefined
-//               ? "not provided"
-//               : String(check.actual)}
-//             {check.unit ? ` ${check.unit}` : ""}
-//           </span>
-//         </div>
-//         {check.evidence_summary && (
-//           <p className="mt-0.5 text-xs text-ink/45">{check.evidence_summary}</p>
-//         )}
-//       </div>
-//     </li>
-//   );
-// }
-
-
-
-
-
-
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { checkEligibility, SchemeResult, UserProfile, ConditionCheck } from "@/lib/api";
+import { checkEligibility, SchemeResult, UserProfile, ConditionCheck, explainScheme } from "@/lib/api";
 import {
   CheckCircle2,
   XCircle,
@@ -449,8 +11,10 @@ import {
   ChevronDown,
   AlertTriangle,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReadAloudButton, { SUPPORTED_LANGUAGES } from "@/components/ReadAloudButton";
 
 const listVariants = {
   hidden: {},
@@ -670,6 +234,8 @@ function SchemeCard({
                 />
               )}
 
+              <ExplainBlock result={result} />
+
               <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-4">
                 <a
                   href={result.official_source_url}
@@ -850,6 +416,103 @@ function MissingFieldInput({
   );
 }
 
+function ExplainBlock({ result }: { result: SchemeResult }) {
+  const [language, setLanguage] = useState(SUPPORTED_LANGUAGES[0]);
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [source, setSource] = useState<"ai" | "fallback" | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleExplain() {
+    setLoading(true);
+    setError(null);
+    setExplanation(null);
+    setSource(null);
+    try {
+      const result_ = await explainScheme(result, language.value);
+      setExplanation(result_.explanation);
+      setSource(result_.source);
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Couldn't get an explanation right now. The eligibility result above is unaffected either way."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="mt-4 rounded-card border border-primary/20 bg-primary-50/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="flex items-center gap-1.5 text-sm font-medium text-primary-700">
+          <Sparkles className="h-4 w-4" />
+          Explain this in plain language
+        </p>
+        <select
+          className="rounded-full border border-line bg-white px-3 py-1 text-xs text-ink"
+          value={language.value}
+          onChange={(e) =>
+            setLanguage(
+              SUPPORTED_LANGUAGES.find((l) => l.value === e.target.value) ??
+                SUPPORTED_LANGUAGES[0]
+            )
+          }
+        >
+          {SUPPORTED_LANGUAGES.map((l) => (
+            <option key={l.value} value={l.value}>
+              {l.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {!explanation && !loading && (
+        <button
+          onClick={handleExplain}
+          className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary-700"
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          Explain in {language.label}
+        </button>
+      )}
+
+      {loading && (
+        <div className="mt-3 flex items-center gap-2 text-xs text-ink/50">
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          Asking AI to explain the verified result…
+        </div>
+      )}
+
+      {error && (
+        <p className="mt-3 text-xs text-danger">{error}</p>
+      )}
+
+      {explanation && (
+        <div className="mt-3">
+          {source === "fallback" && (
+            <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-ink/40">
+              AI unavailable — showing a basic summary of the verified result
+            </p>
+          )}
+          <p className="text-sm leading-relaxed text-ink/80">{explanation}</p>
+          <div className="mt-3 flex items-center gap-2">
+            <ReadAloudButton text={explanation} speechLang={language.speechLang} />
+            <button
+              onClick={handleExplain}
+              className="text-xs text-ink/40 hover:text-ink/70"
+            >
+              Regenerate
+            </button>
+          </div>
+
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ConditionRow({ check }: { check: SchemeResult["checks"][number] }) {
   const statusIcon =
     check.status === "SATISFIED" ? (
@@ -878,4 +541,3 @@ function ConditionRow({ check }: { check: SchemeResult["checks"][number] }) {
     </li>
   );
 }
-

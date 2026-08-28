@@ -3,9 +3,15 @@ from typing import List, Dict, Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
 from models import UserProfile, SchemeResult
 from rule_engine import load_schemes, run_rule_engine
 from llm_explainer import explain_result
+
+from backend.api.eligibility import router as eligibility_router
+from backend.api.explain import router as explain_router
+from backend.api.document import router as document_router
+
 
 app = FastAPI(
     title="AI-Powered Scheme Assistance Agent",
@@ -13,7 +19,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
+
 # Enable CORS for all origins
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,6 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 def get_schemes_file_path() -> str:
     """Returns path to schemes JSON file, checking both schemes.json and scheme.json."""
@@ -82,4 +91,14 @@ def check_eligibility_with_explanation(user: UserProfile) -> Dict[str, Any]:
 def get_schemes() -> List[Dict[str, Any]]:
     """Returns the full raw list of schemes."""
     return load_schemes(get_schemes_file_path())
+
+
+app.include_router(eligibility_router)
+app.include_router(explain_router)
+app.include_router(document_router)
+
+
+@app.get("/")
+def health_check():
+    return {"status": "ok", "service": "gov-scheme-matcher-backend"}
 
