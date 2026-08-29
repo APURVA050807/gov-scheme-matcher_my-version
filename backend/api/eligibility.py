@@ -5,8 +5,8 @@ from typing import List
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from models.scheme import Scheme, SchemeResult
-from models.profile import UserProfile
+from models import Scheme, SchemeResult, UserProfile
+
 from rules.engine import evaluate_all_schemes
 
 router = APIRouter(prefix="/eligibility", tags=["eligibility"])
