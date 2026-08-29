@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List
 
-from backend.ai.explainer import explain_result
+from ai.explainer import explain_result
 
 router = APIRouter(prefix="/explain", tags=["explain"])
 
