@@ -3,9 +3,9 @@ PHASE 16 discipline: boundary conditions, missing info, and NOT logic.
 Run with:  pytest backend/tests -v
 """
 import pytest
-from backend.models.scheme import Scheme
-from backend.models.profile import UserProfile
-from backend.rules.engine import evaluate_scheme
+from models.scheme import Scheme
+from models.profile import UserProfile
+from rules.engine import evaluate_scheme
 
 INCOME_SCHEME = Scheme(
     scheme_id="TEST-001",
