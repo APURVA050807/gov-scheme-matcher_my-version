@@ -8,9 +8,9 @@ from models import UserProfile, SchemeResult
 from rule_engine import load_schemes, run_rule_engine
 from llm_explainer import explain_result
 
-from backend.api.eligibility import router as eligibility_router
-from backend.api.explain import router as explain_router
-from backend.api.document import router as document_router
+from api.eligibility import router as eligibility_router
+from api.explain import router as explain_router
+from api.document import router as document_router
 
 
 app = FastAPI(
