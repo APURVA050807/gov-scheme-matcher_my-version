@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from pydantic import BaseModel
 
-from backend.ocr.document_reader import extract_income_from_image, OcrError
+from ocr.document_reader import extract_income_from_image, OcrError
 
 router = APIRouter(prefix="/document", tags=["document"])
 
