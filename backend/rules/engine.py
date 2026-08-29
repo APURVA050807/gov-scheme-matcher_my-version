@@ -26,9 +26,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, List, Union
 
-from backend.models.scheme import Condition, RuleGroup, Scheme, SchemeResult
-from backend.models.profile import UserProfile
-from backend.rules.operators import evaluate_operator
+from models.scheme import Condition, RuleGroup, Scheme, SchemeResult
+from models.profile import UserProfile
+from rules.operators import evaluate_operator
 
 
 class Tri(str, Enum):
